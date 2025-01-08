@@ -4,8 +4,8 @@ negro = (0,0,0)
 gris = (200,200,200)
 
 # Crear un botón
-def crear_boton(lienzo, texto, fuente, tamaño, pos, ancho, alto, color):
-    pygame.draw.rect(lienzo, color, (pos[0], pos[1], ancho, alto))
+def crear_boton(lienzo, texto, fuente, tamaño, pos, ancho, alto, color, borde=20):
+    pygame.draw.rect(lienzo, color, (pos[0], pos[1], ancho, alto), border_radius=borde)
     font = pygame.font.SysFont(fuente, tamaño)
     text_surface = font.render(texto, True, negro)
     lienzo.blit(text_surface, (pos[0] + (ancho - text_surface.get_width()) // 2, pos[1] + (alto - text_surface.get_height()) // 2))
@@ -17,7 +17,7 @@ def click_boton(pos, ancho, alto, e):
             return True
     return False
 
-def graficar_tablero(ventana, tab):
+def graficar_tablero(ventana, tab, ganador=None):
     celda = 700 // 7
     img_x = pygame.image.load("util/fichaB.png")
     img_o = pygame.image.load("util/fichaR.png")
@@ -29,6 +29,13 @@ def graficar_tablero(ventana, tab):
             x = col * (celda + 15) + (celda + 15) // 2
             y = fila * celda + celda // 2 + 100
 
+            if tab[fila][col] == 'g' and ganador == 2:
+                pygame.draw.circle(ventana, (0, 255, 0), (x+1, y-1.5), 50, 4)
+                ventana.blit(imagen_o, (col * (celda + 15), fila * celda + 90))
+            elif tab[fila][col] == 'g' and ganador == 1:
+                pygame.draw.circle(ventana, (0, 255, 0), (x+1, y-1.5), 50, 4)
+                ventana.blit(imagen_x, (col * (celda + 15), fila * celda + 90))
+
             if tab[fila][col] is None:
                 pygame.draw.circle(ventana, gris, (x, y), 45)
             elif tab[fila][col] == 'x':
@@ -38,22 +45,27 @@ def graficar_tablero(ventana, tab):
 
 def cuatro_linea(tab):
     ganador = 0
+    fichas = []
 
     # Vertical
     for i in range(len(tab) - 3):
         for columna in range(len(tab[0])):
             if tab[i][columna] == 'x' and tab[i+1][columna] == 'x' and tab[i+2][columna] == 'x' and tab[i+3][columna] == 'x':
                 ganador = 1
+                fichas = [(fila, columna) for fila in range(i, i+4)]
             elif tab[i][columna] == 'o' and tab[i+1][columna] == 'o' and tab[i+2][columna] == 'o' and tab[i+3][columna] == 'o':
                 ganador = 2
+                fichas = [(fila, columna) for fila in range(i, i+4)]
 
     # Horizontal
     for i in range(len(tab)):
         for columna in range(len(tab[0]) - 3):
             if tab[i][columna] == 'x' and tab[i][columna+1] == 'x' and tab[i][columna+2] == 'x' and tab[i][columna+3] == 'x':
                 ganador = 1
+                fichas = [(i, columna) for columna in range(columna, columna+4)]
             elif tab[i][columna] == 'o' and tab[i][columna+1] == 'o' and tab[i][columna+2] == 'o' and tab[i][columna+3] == 'o':
                 ganador = 2
+                fichas = [(i, columna) for columna in range(columna, columna+4)]
 
     # Diagonales
     for i in range(len(tab) - 3):
@@ -61,16 +73,20 @@ def cuatro_linea(tab):
             if columna <= len(tab[0]) - 4:
                 if tab[i][columna] == 'x' and tab[i+1][columna+1] == 'x' and tab[i+2][columna+2] == 'x' and tab[i+3][columna+3] == 'x':
                     ganador = 1
+                    fichas = [(i + d, columna + d) for d in range(4)]
                 elif tab[i][columna] == 'o' and tab[i+1][columna+1] == 'o' and tab[i+2][columna+2] == 'o' and tab[i+3][columna+3] == 'o':
                     ganador = 2
+                    fichas = [(i + d, columna + d) for d in range(4)]
 
             if columna >= 3:
                 if tab[i][columna] == 'x' and tab[i+1][columna-1] == 'x' and tab[i+2][columna-2] == 'x' and tab[i+3][columna-3] == 'x':
                     ganador = 1
+                    fichas = [(i + d, columna - d) for d in range(4)]
                 elif tab[i][columna] == 'o' and tab[i+1][columna-1] == 'o' and tab[i+2][columna-2] == 'o' and tab[i+3][columna-3] == 'o':
                     ganador = 2
+                    fichas = [(i + d, columna - d) for d in range(4)]
 
-    return ganador
+    return fichas, ganador
 
 def saturado(tab):
     for i in range(6):

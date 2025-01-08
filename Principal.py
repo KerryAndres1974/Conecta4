@@ -16,9 +16,6 @@ gris = (200, 200, 200)
 def window():
     pantalla = True
     ventana = pygame.display.set_mode((400, 400))
-    pygame.display.set_caption("Conecta 4")
-    font = pygame.font.SysFont("Harlow Solid Italic", 30)
-    verdadero = False
 
     while pantalla:
         ventana.fill(blanco)
@@ -29,12 +26,12 @@ def window():
         
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
-                pantalla = False
                 pygame.quit()
                 sys.exit()
 
             elif F.click_boton((100, 70), 200, 50, e):
-                verdadero = True
+                Clasico()
+                pygame.display.set_mode((400, 400))
 
             elif F.click_boton((100, 170), 200, 50, e):
                 Pop_out()
@@ -42,28 +39,9 @@ def window():
 
             elif F.click_boton((100, 270), 200, 50, e):
                 Pop_Ten()
-                pygame.display.set_mode((400, 400))
+                pygame.display.set_mode((400, 400))            
 
-        if verdadero:
-            ventana.fill(blanco)
-            texto = font.render("Escoje a tu oponente", True, negro)
-            ventana.blit(texto, (96, 10))
-
-            F.crear_boton(ventana, "Humano", "Harlow Solid Italic", 36, (100, 70), 200, 50, gris)
-            F.crear_boton(ventana, "Maquina", "Harlow Solid Italic", 36, (100, 170), 200, 50, gris)
-            F.crear_boton(ventana, "Regresar", "Harlow Solid Italic", 36, (100, 270), 200, 50, gris)
-
-            if F.click_boton((100, 70), 200, 50, e):
-                Clasico()
-                pygame.display.set_mode((400, 400))
-
-            elif F.click_boton((100, 170), 200, 50, e):
-                print("Holaa")
-
-            elif F.click_boton((100, 270), 200, 50, e):
-                verdadero = False
-            
-
+        pygame.display.set_caption("Conecta 4")
         pygame.display.flip()
 
 # Ejecutar la ventana principal
